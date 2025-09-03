@@ -1,12 +1,14 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/authContext";
 
 export default function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const router = useRouter();
+  const { login } = useAuth();
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -16,8 +18,10 @@ export default function LoginForm() {
       body: JSON.stringify({ username, password }),
     });
     const data = await res.json();
-    
+
     if (res.ok) {
+      // Store user data in auth context
+      login(data.user);
       // Redirect to home page on successful login
       router.push("/home");
     } else {
@@ -44,7 +48,11 @@ export default function LoginForm() {
         />
         <button className="bg-green-500 text-white p-2 rounded">Login</button>
       </form>
-      <a href="/signup"><button className="bg-blue-500 text-white m-2 p-2 rounded">Create an account</button></a>
+      <a href="/signup">
+        <button className="bg-blue-500 text-white m-2 p-2 rounded">
+          Create an account
+        </button>
+      </a>
       {message && <p className="mt-2">{message}</p>}
     </div>
   );
